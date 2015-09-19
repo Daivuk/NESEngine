@@ -10,6 +10,27 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\continue.asm" />
+    <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\data.asm" />
+    <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\game.asm" />
+    <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\helper.asm" />
+    <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\joypad.asm" />
+    <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\map.asm" />
+    <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\meta.asm" />
+    <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\nec.asm" />
+    <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\pal.asm" />
+    <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\ppu.asm" />
+    <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\title.asm" />
+    <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\vars.asm" />
+    <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\wrongCode.asm" />
+    <None Include="src\data.asm" />
+    <None Include="src\engine.asm" />
+    <None Include="src\game.asm" />
+    <None Include="src\macro.asm" />
+    <None Include="src\ppu.asm" />
+    <None Include="src\timing.asm" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{97966B5D-4F99-4BE7-8EB6-0660EC5473D0}</ProjectGuid>
     <RootNamespace>NESEngine</RootNamespace>
@@ -63,19 +84,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <CustomBuild Include="src\nec.asm">
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NESASM3.exe %(Identify)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NESASM3.exe %(Identify)</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </Outputs>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
-    </CustomBuild>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

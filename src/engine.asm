@@ -79,10 +79,10 @@ Main:
 	sta $2000
 	lda #%00011110	; Enable rendering
 	sta $2001
-    jsr Game
-    jsr SubmitCmd
+    jsr OnInit
 MainLoop:
-    ;jsr Game
+    jsr SubmitCmd
+    jsr OnFrame
     jmp MainLoop
 
 ;-----------------------------------------------------------------------------------------

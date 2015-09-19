@@ -8,6 +8,7 @@ cmd_data    .rs 256 - 2
 
 CMD_SETPAL0 .func 0
 CMD_SETPAL1 .func 1
+CMD_END .func 2
 
 ;-----------------------------------------------------------------------------------------
 ; Wait for vblank to start
@@ -87,13 +88,22 @@ SetPal_loop1:
 ;-----------------------------------------------------------------------------------------
 SubmitCmd:
 	pha ; push
+    txa
+    pha
+
+    ldx cmd_size
+    lda #CMD_END()
+    sta cmd_data, x
     lda #1
     sta cmd_enabled
     lda #$ff
 WaitCmdFeed:
     bit cmd_enabled
     bne WaitCmdFeed
+
     pla ; pop
+    tax
+    pla
     rts
     
 ;-----------------------------------------------------------------------------------------
@@ -109,15 +119,16 @@ NMI:
 
     ldx #0
 NMI_CmdLoop:
-    cpx cmd_size
-    beq NMI_CmdDone
     lda cmd_data, x
     inx
-    cmp #CMD_SETPAL0()
-    beq NMI_CmdSetPal0
-    cmp #CMD_SETPAL1()
-    beq NMI_CmdSetPal1
-    jmp NMI_CmdLoop
+    asl A
+    tay
+    lda cmd_vtable, y
+    sta $00
+    iny
+    lda cmd_vtable, y
+    sta $01
+    jmp [$0000]
 
 NMI_CmdSetPal0:
     LDA $2002
@@ -163,3 +174,6 @@ NMI_CmdDone:
 	tax
 	pla
     rti ; Return from interupt
+    
+cmd_vtable:
+    .dw NMI_CmdSetPal0, NMI_CmdSetPal1, NMI_CmdDone

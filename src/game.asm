@@ -1,17 +1,19 @@
 ;-----------------------------------------------------------------------------------------
+; Initialize method for the game
+;-----------------------------------------------------------------------------------------
+    .bank 0
+OnInit:
+    LOAD_ADDR palWorld1
+    jsr SetPal0
+    LOAD_ADDR palWorld1_sprites
+    jsr SetPal1
+    rts
+
+;-----------------------------------------------------------------------------------------
 ; Game main loop. This is called every frame by the engine
 ;-----------------------------------------------------------------------------------------
     .bank 0
-Game:
-    ;LOAD_ADDR palWorld1
-
-    lda #LOW(palWorld1)
-    sta $00
-    lda #HIGH(palWorld1)
-    sta $01
-
-    jsr SetPal0
-    jsr SetPal1
+OnFrame:
     rts
 
 ;-----------------------------------------------------------------------------------------
