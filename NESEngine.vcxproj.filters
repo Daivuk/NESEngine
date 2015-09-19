@@ -2,43 +2,43 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\meta.asm">
-      <Filter>NES</Filter>
+      <Filter>NEC</Filter>
     </None>
     <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\nec.asm">
-      <Filter>NES</Filter>
+      <Filter>NEC</Filter>
     </None>
     <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\pal.asm">
-      <Filter>NES</Filter>
+      <Filter>NEC</Filter>
     </None>
     <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\ppu.asm">
-      <Filter>NES</Filter>
+      <Filter>NEC</Filter>
     </None>
     <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\title.asm">
-      <Filter>NES</Filter>
+      <Filter>NEC</Filter>
     </None>
     <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\vars.asm">
-      <Filter>NES</Filter>
+      <Filter>NEC</Filter>
     </None>
     <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\wrongCode.asm">
-      <Filter>NES</Filter>
+      <Filter>NEC</Filter>
     </None>
     <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\continue.asm">
-      <Filter>NES</Filter>
+      <Filter>NEC</Filter>
     </None>
     <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\data.asm">
-      <Filter>NES</Filter>
+      <Filter>NEC</Filter>
     </None>
     <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\game.asm">
-      <Filter>NES</Filter>
+      <Filter>NEC</Filter>
     </None>
     <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\helper.asm">
-      <Filter>NES</Filter>
+      <Filter>NEC</Filter>
     </None>
     <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\joypad.asm">
-      <Filter>NES</Filter>
+      <Filter>NEC</Filter>
     </None>
     <None Include="E:\OldComputerBackup\NESDev\Projects\NEC\map.asm">
-      <Filter>NES</Filter>
+      <Filter>NEC</Filter>
     </None>
     <None Include="src\engine.asm">
       <Filter>Engine</Filter>
@@ -60,14 +60,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="NES">
-      <UniqueIdentifier>{6c17989e-6275-4636-b900-ad4cde6cf752}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Game">
       <UniqueIdentifier>{ce1a01c7-f720-41e8-985b-9406d759c560}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine">
       <UniqueIdentifier>{da9dafd7-7c45-4a60-8680-444070cc111b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NEC">
+      <UniqueIdentifier>{6c17989e-6275-4636-b900-ad4cde6cf752}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
