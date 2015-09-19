@@ -30,3 +30,15 @@
 
 # Debug files
 *.dSYM/
+
+# VS files
+*.sdf
+*.opensdf
+*.user
+*.suo
+Debug
+Release
+*.nes
+*.fns
+*.deb
+
