@@ -1,9 +1,10 @@
 ;-----------------------------------------------------------------------------------------
 ; Command buffer
 ;-----------------------------------------------------------------------------------------
-    .rsset $0200
+    .rsset $0004
 cmd_enabled .rs 1  ; Has work to be done
 cmd_size    .rs 1  ; Current position of written data
+    .rsset $0200
 cmd_data    .rs 256 - 2
 
 CMD_SETPAL0 .func 0
