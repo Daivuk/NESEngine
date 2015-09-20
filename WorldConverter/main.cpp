@@ -272,8 +272,23 @@ int main()
     WRITEB(startZoneId);
     WRITEW(playerStart.x);
     WRITEW(playerStart.y);
+    int offset = 5 + (int)zones.size() * 2;
     for (auto &zone : zones)
     {
+        WRITEW(offset);
+        if (zone.dir == eDir::HORIZONTAL)
+        {
+            offset += (zone.size * ((13 + 4) * 16));
+        }
+        else
+        {
+            offset += (zone.size * (13 * (16 + 4)));
+        }
+    }
+    for (auto &zone : zones)
+    {
+        WRITEB(zone.dir);
+        WRITEB(zone.size);
         WRITEB(zone.x);
         WRITEB(zone.y);
 
@@ -285,25 +300,26 @@ int main()
                 {
                     WRITEB(pTiles[j * w + i].id);
                 }
-                uint8_t pal = pTiles[j * w + 0].pal << 6;
-                pal |= pTiles[j * w + 1].pal << 4;
-                pal |= pTiles[j * w + 2].pal << 2;
-                pal |= pTiles[j * w + 3].pal;
+                int i = zone.x * 16;
+                uint8_t pal = pTiles[j * w + i + 0].pal << 6;
+                pal |= pTiles[j * w + i + 1].pal << 4;
+                pal |= pTiles[j * w + i + 2].pal << 2;
+                pal |= pTiles[j * w + i + 3].pal;
                 WRITEB(pal);
-                pal = pTiles[j * w + 4].pal << 6;
-                pal |= pTiles[j * w + 5].pal << 4;
-                pal |= pTiles[j * w + 6].pal << 2;
-                pal |= pTiles[j * w + 7].pal;
+                pal = pTiles[j * w + i + 4].pal << 6;
+                pal |= pTiles[j * w + i + 5].pal << 4;
+                pal |= pTiles[j * w + i + 6].pal << 2;
+                pal |= pTiles[j * w + i + 7].pal;
                 WRITEB(pal);
-                pal = pTiles[j * w + 8].pal << 6;
-                pal |= pTiles[j * w + 9].pal << 4;
-                pal |= pTiles[j * w + 10].pal << 2;
-                pal |= pTiles[j * w + 11].pal;
+                pal = pTiles[j * w + i + 8].pal << 6;
+                pal |= pTiles[j * w + i + 9].pal << 4;
+                pal |= pTiles[j * w + i + 10].pal << 2;
+                pal |= pTiles[j * w + i + 11].pal;
                 WRITEB(pal);
-                pal = pTiles[j * w + 12].pal << 6;
-                pal |= pTiles[j * w + 13].pal << 4;
-                pal |= pTiles[j * w + 14].pal << 2;
-                pal |= pTiles[j * w + 15].pal;
+                pal = pTiles[j * w + i + 12].pal << 6;
+                pal |= pTiles[j * w + i + 13].pal << 4;
+                pal |= pTiles[j * w + i + 14].pal << 2;
+                pal |= pTiles[j * w + i + 15].pal;
                 WRITEB(pal);
             }
         }
@@ -314,26 +330,47 @@ int main()
                 for (int j = zone.y * 13; j < zone.y * 13 + 13; ++j)
                 {
                     WRITEB(pTiles[j * w + i].id);
-                    uint8_t pal = pTiles[(j + 0) * w + i].pal << 6;
-                    pal |= pTiles[(j + 1) * w + i].pal << 4;
-                    pal |= pTiles[(j + 2) * w + i].pal << 2;
-                    pal |= pTiles[(j + 3) * w + i].pal;
-                    WRITEB(pal);
-                    pal = pTiles[(j + 4) * w + i].pal << 6;
-                    pal |= pTiles[(j + 5) * w + i].pal << 4;
-                    pal |= pTiles[(j + 6) * w + i].pal << 2;
-                    pal |= pTiles[(j + 7) * w + i].pal;
-                    WRITEB(pal);
-                    pal = pTiles[(j + 8) * w + i].pal << 6;
-                    pal |= pTiles[(j + 9) * w + i].pal << 4;
-                    pal |= pTiles[(j + 10) * w + i].pal << 2;
-                    pal |= pTiles[(j + 11) * w + i].pal;
-                    WRITEB(pal);
-                    pal = pTiles[(j + 12) * w + i].pal << 6;
-                    WRITEB(pal);
                 }
+                int j = zone.y * 13;
+                uint8_t pal = pTiles[(j + 0) * w + i].pal << 6;
+                pal |= pTiles[(j + 1) * w + i].pal << 4;
+                pal |= pTiles[(j + 2) * w + i].pal << 2;
+                pal |= pTiles[(j + 3) * w + i].pal;
+                WRITEB(pal);
+                pal = pTiles[(j + 4) * w + i].pal << 6;
+                pal |= pTiles[(j + 5) * w + i].pal << 4;
+                pal |= pTiles[(j + 6) * w + i].pal << 2;
+                pal |= pTiles[(j + 7) * w + i].pal;
+                WRITEB(pal);
+                pal = pTiles[(j + 8) * w + i].pal << 6;
+                pal |= pTiles[(j + 9) * w + i].pal << 4;
+                pal |= pTiles[(j + 10) * w + i].pal << 2;
+                pal |= pTiles[(j + 11) * w + i].pal;
+                WRITEB(pal);
+                //pal = pTiles[(j + 12) * w + i].pal << 6;
+                //WRITEB(pal);
             }
         }
     }
+    fclose(pFic);
+
+    // Now do the nametable, we pretty much just have to reorder it
+    uint8_t nam[960];
+    uint8_t namOut[960];
+    fopen_s(&pFic, "../tiles.nam", "rb");
+    fread(nam, 1, 960, pFic);
+    fclose(pFic);
+    for (int j = 0; j < 15; ++j)
+    {
+        for (int i = 0; i < 16; ++i)
+        {
+            namOut[j * 4 * 16 + i * 4 + 0] = nam[(j * 2 + 0) * 2 * 16 + i * 2 + 0];
+            namOut[j * 4 * 16 + i * 4 + 1] = nam[(j * 2 + 0) * 2 * 16 + i * 2 + 1];
+            namOut[j * 4 * 16 + i * 4 + 2] = nam[(j * 2 + 1) * 2 * 16 + i * 2 + 0];
+            namOut[j * 4 * 16 + i * 4 + 3] = nam[(j * 2 + 1) * 2 * 16 + i * 2 + 1];
+        }
+    }
+    fopen_s(&pFic, "../assets/tiles.bin", "wb");
+    fwrite(namOut, 1, 960, pFic);
     fclose(pFic);
 }

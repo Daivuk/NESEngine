@@ -75,13 +75,14 @@ clrmem:
 ;-----------------------------------------------------------------------------------------
 	.bank 0
 Main:
+    bit $2002
     lda #%10010000	; enable NMI, sprites from Pattern Table 0, bg pattern 1
 	sta $2000
 	lda #%00011110	; Enable rendering
 	sta $2001
     jsr OnInit
 MainLoop:
-    jsr SubmitCmd
+    jsr ppu_SubmitCmd
     jsr OnFrame
     jmp MainLoop
 
