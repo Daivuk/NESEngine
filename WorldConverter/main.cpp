@@ -129,6 +129,9 @@ int main()
         }
     }
 
+    int startZoneId = 0;
+    sEntity playerStart;
+
     for (auto pXMLLayer = pXMLMap->FirstChildElement("objectgroup"); pXMLLayer; pXMLLayer = pXMLLayer->NextSiblingElement("objectgroup"))
     {
         string name = pXMLLayer->Attribute("name");
@@ -227,34 +230,110 @@ int main()
                 }
 
                 // Find its zone
+                int zoneId = 0;
                 for (auto &zone : zones)
                 {
-                    if (zone.dir == eDir::HORIZONTAL)
+                    zone.id = zoneId;
+                    if ((zone.dir == eDir::HORIZONTAL &&
+                        entity.x >= zone.x * 256 &&
+                        entity.x < (zone.x + zone.size) * 256 &&
+                        entity.y >= zone.y * 208 &&
+                        entity.y < zone.y * 208 + 208) ||
+                        (zone.dir == eDir::VERTICAL &&
+                        entity.x >= zone.x * 256 &&
+                        entity.x < zone.x * 256 + 256 &&
+                        entity.y >= zone.y * 208 &&
+                        entity.y < (zone.y + zone.size) * 208))
                     {
-                        if (entity.x >= zone.x * 256 &&
-                            entity.x < (zone.x + zone.size) * 256 &&
-                            entity.y >= zone.y * 208 &&
-                            entity.y < zone.y * 208 + 208)
+                        playerStart.x -= zone.x * 256;
+                        playerStart.y -= zone.y * 208;
+                        if (entity.type == eEntityType::ENTITY_PLAYER_START)
+                        {
+                            playerStart = entity;
+                            startZoneId = zoneId;
+                        }
+                        else
                         {
                             zone.entities.push_back(entity);
                         }
                     }
-                    else if (zone.dir == eDir::VERTICAL)
-                    {
-                        if (entity.x >= zone.x * 256 &&
-                            entity.x < zone.x * 256 + 256 &&
-                            entity.y >= zone.y * 208 &&
-                            entity.y < (zone.y + zone.size) * 208)
-                        {
-                            zone.entities.push_back(entity);
-                        }
-                    }
+                    ++zoneId;
                 }
             }
         }
     }
 
+#define WRITEB(__value__) {uint8_t val = (uint8_t)__value__; fwrite(&val, 1, 1, pFic);}
+#define WRITEW(__value__) {uint16_t val = (uint16_t)__value__; fwrite(&val, 1, 2, pFic);}
+
     // Data is loaded, now convert it
-    int tmp;
-    tmp = 5;
+    FILE *pFic = nullptr;
+    fopen_s(&pFic, "../assets/world.bin", "wb");
+    WRITEB(startZoneId);
+    WRITEW(playerStart.x);
+    WRITEW(playerStart.y);
+    for (auto &zone : zones)
+    {
+        WRITEB(zone.x);
+        WRITEB(zone.y);
+
+        if (zone.dir == eDir::VERTICAL)
+        {
+            for (int j = zone.y * 13; j < zone.y * 13 + zone.size * 13; ++j)
+            {
+                for (int i = zone.x * 16; i < zone.x * 16 + 16; ++i)
+                {
+                    WRITEB(pTiles[j * w + i].id);
+                }
+                uint8_t pal = pTiles[j * w + 0].pal << 6;
+                pal |= pTiles[j * w + 1].pal << 4;
+                pal |= pTiles[j * w + 2].pal << 2;
+                pal |= pTiles[j * w + 3].pal;
+                WRITEB(pal);
+                pal = pTiles[j * w + 4].pal << 6;
+                pal |= pTiles[j * w + 5].pal << 4;
+                pal |= pTiles[j * w + 6].pal << 2;
+                pal |= pTiles[j * w + 7].pal;
+                WRITEB(pal);
+                pal = pTiles[j * w + 8].pal << 6;
+                pal |= pTiles[j * w + 9].pal << 4;
+                pal |= pTiles[j * w + 10].pal << 2;
+                pal |= pTiles[j * w + 11].pal;
+                WRITEB(pal);
+                pal = pTiles[j * w + 12].pal << 6;
+                pal |= pTiles[j * w + 13].pal << 4;
+                pal |= pTiles[j * w + 14].pal << 2;
+                pal |= pTiles[j * w + 15].pal;
+                WRITEB(pal);
+            }
+        }
+        else if (zone.dir == eDir::HORIZONTAL)
+        {
+            for (int i = zone.x * 16; i < zone.x * 16 + zone.size * 16; ++i)
+            {
+                for (int j = zone.y * 13; j < zone.y * 13 + 13; ++j)
+                {
+                    WRITEB(pTiles[j * w + i].id);
+                    uint8_t pal = pTiles[(j + 0) * w + i].pal << 6;
+                    pal |= pTiles[(j + 1) * w + i].pal << 4;
+                    pal |= pTiles[(j + 2) * w + i].pal << 2;
+                    pal |= pTiles[(j + 3) * w + i].pal;
+                    WRITEB(pal);
+                    pal = pTiles[(j + 4) * w + i].pal << 6;
+                    pal |= pTiles[(j + 5) * w + i].pal << 4;
+                    pal |= pTiles[(j + 6) * w + i].pal << 2;
+                    pal |= pTiles[(j + 7) * w + i].pal;
+                    WRITEB(pal);
+                    pal = pTiles[(j + 8) * w + i].pal << 6;
+                    pal |= pTiles[(j + 9) * w + i].pal << 4;
+                    pal |= pTiles[(j + 10) * w + i].pal << 2;
+                    pal |= pTiles[(j + 11) * w + i].pal;
+                    WRITEB(pal);
+                    pal = pTiles[(j + 12) * w + i].pal << 6;
+                    WRITEB(pal);
+                }
+            }
+        }
+    }
+    fclose(pFic);
 }
