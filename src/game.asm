@@ -1,5 +1,7 @@
-    .rsset $0010
+    .rsset $0008
 game_state: .rs 1
+game_UNUSED: .rs 1
+game_scroll: .rs 2
 
 GAME_STATE_LOADING_SECTION .func 0
 GAME_STATE_PLAY .func 0
@@ -119,27 +121,35 @@ vLoop:
 ; Initialize method for the game
 ;-----------------------------------------------------------------------------------------
 OnInit:
+    pha
+
     ; Write tiles
     jsr ppu_Off
 
-    LOAD_ADDR6 tiles
-    lda #0 ; Sector 0
-    ldx #0 ; Column 0
-    jsr getColumnAddr
-    jsr drawColumn
+    ;LOAD_ADDR6 tiles
+    ;lda #0 ; Sector 0
+    ;ldx #0 ; Column 0
+    ;jsr getColumnAddr
+    ;jsr drawColumn
 
     jsr ppu_On
 
-    ; Default palette
-    LOAD_ADDR0 palWorld1
+    LOAD_ADDR0 palWorld1            ; Default palette
     jsr ppu_SetPal0
     LOAD_ADDR0 palWorld1_sprites
     jsr ppu_SetPal1
 
+    lda #SCROLL_DIR_HORIZONTAL()    ; Scrolling direction
+    jsr ppu_SetScrollDir
+    lda #BG_PATTERN1()              ; Our background tiles are on the second pattern
+    jsr ppu_SetBGPattern
+
     ; Scrolling 0,0
-    ldx #0
-    ldy #0
-    jsr ppu_SetScrolling
+    ;ldx #0
+    ;ldy #0
+    ;jsr ppu_SetScrolling
+
+    pla
     rts
 
 ;-----------------------------------------------------------------------------------------
@@ -147,6 +157,16 @@ OnInit:
 ;-----------------------------------------------------------------------------------------
     .bank 0
 OnFrame:
+    lda game_scroll         ; Scroll X 1 per frame
+    clc
+    adc #1
+    sta game_scroll
+    sta $00
+    lda game_scroll + 1
+    adc #0
+    sta game_scroll + 1
+    sta $01
+    jsr ppu_SetScrolling
     rts
 
 ;-----------------------------------------------------------------------------------------

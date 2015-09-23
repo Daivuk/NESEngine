@@ -347,8 +347,8 @@ int main()
                 pal |= pTiles[(j + 10) * w + i].pal << 2;
                 pal |= pTiles[(j + 11) * w + i].pal;
                 WRITEB(pal);
-                //pal = pTiles[(j + 12) * w + i].pal << 6;
-                //WRITEB(pal);
+                pal = pTiles[(j + 12) * w + i].pal << 6;
+                WRITEB(pal);
             }
         }
     }
