@@ -29,6 +29,7 @@
     <None Include="src\game.asm" />
     <None Include="src\macro.asm" />
     <None Include="src\ppu.asm" />
+    <None Include="src\tiles.asm" />
     <None Include="src\timing.asm" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

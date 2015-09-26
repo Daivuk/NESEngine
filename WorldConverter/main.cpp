@@ -17,8 +17,8 @@ struct sTile
 
 enum class eDir : uint8_t
 {
-    HORIZONTAL,
-    VERTICAL
+    HORIZONTAL = 0,
+    VERTICAL = 0x4
 };
 
 enum eTheme : uint8_t
@@ -331,24 +331,45 @@ int main()
                 {
                     WRITEB(pTiles[j * w + i].id);
                 }
-                int j = zone.y * 13;
-                uint8_t pal = pTiles[(j + 0) * w + i].pal << 6;
-                pal |= pTiles[(j + 1) * w + i].pal << 4;
-                pal |= pTiles[(j + 2) * w + i].pal << 2;
-                pal |= pTiles[(j + 3) * w + i].pal;
-                WRITEB(pal);
-                pal = pTiles[(j + 4) * w + i].pal << 6;
-                pal |= pTiles[(j + 5) * w + i].pal << 4;
-                pal |= pTiles[(j + 6) * w + i].pal << 2;
-                pal |= pTiles[(j + 7) * w + i].pal;
-                WRITEB(pal);
-                pal = pTiles[(j + 8) * w + i].pal << 6;
-                pal |= pTiles[(j + 9) * w + i].pal << 4;
-                pal |= pTiles[(j + 10) * w + i].pal << 2;
-                pal |= pTiles[(j + 11) * w + i].pal;
-                WRITEB(pal);
-                pal = pTiles[(j + 12) * w + i].pal << 6;
-                WRITEB(pal);
+
+                if ((i % 2) == 0)
+                {
+                    int j = zone.y * 13;
+                    uint8_t pal = pTiles[(j + 0) * w + (i + 0)].pal << 0;
+                    pal |= pTiles[(j + 0) * w + (i + 1)].pal << 2;
+                    pal |= pTiles[(j + 1) * w + (i + 0)].pal << 4;
+                    pal |= pTiles[(j + 1) * w + (i + 1)].pal << 6;
+                    WRITEB(pal);
+                    pal = pTiles[(j + 2) * w + (i + 0)].pal << 0;
+                    pal |= pTiles[(j + 2) * w + (i + 1)].pal << 2;
+                    pal |= pTiles[(j + 3) * w + (i + 0)].pal << 4;
+                    pal |= pTiles[(j + 3) * w + (i + 1)].pal << 6;
+                    WRITEB(pal);
+                    pal = pTiles[(j + 4) * w + (i + 0)].pal << 0;
+                    pal |= pTiles[(j + 4) * w + (i + 1)].pal << 2;
+                    pal |= pTiles[(j + 5) * w + (i + 0)].pal << 4;
+                    pal |= pTiles[(j + 5) * w + (i + 1)].pal << 6;
+                    WRITEB(pal);
+                }
+                else
+                {
+                    int j = zone.y * 13 + 6;
+                    uint8_t pal = pTiles[(j + 0) * w + (i - 1)].pal << 0;
+                    pal |= pTiles[(j + 0) * w + (i + 0)].pal << 2;
+                    pal |= pTiles[(j + 1) * w + (i - 1)].pal << 4;
+                    pal |= pTiles[(j + 1) * w + (i + 0)].pal << 6;
+                    WRITEB(pal);
+                    pal = pTiles[(j + 2) * w + (i - 1)].pal << 0;
+                    pal |= pTiles[(j + 2) * w + (i + 0)].pal << 2;
+                    pal |= pTiles[(j + 3) * w + (i - 1)].pal << 4;
+                    pal |= pTiles[(j + 3) * w + (i + 0)].pal << 6;
+                    WRITEB(pal);
+                    pal = pTiles[(j + 4) * w + (i - 1)].pal << 0;
+                    pal |= pTiles[(j + 4) * w + (i + 0)].pal << 2;
+                    pal |= pTiles[(j + 5) * w + (i - 1)].pal << 4;
+                    pal |= pTiles[(j + 5) * w + (i + 0)].pal << 6;
+                    WRITEB(pal);
+                }
             }
         }
     }
@@ -364,10 +385,10 @@ int main()
     {
         for (int i = 0; i < 16; ++i)
         {
-            namOut[j * 4 * 16 + i * 4 + 0] = nam[(j * 2 + 0) * 2 * 16 + i * 2 + 0];
-            namOut[j * 4 * 16 + i * 4 + 1] = nam[(j * 2 + 0) * 2 * 16 + i * 2 + 1];
-            namOut[j * 4 * 16 + i * 4 + 2] = nam[(j * 2 + 1) * 2 * 16 + i * 2 + 0];
-            namOut[j * 4 * 16 + i * 4 + 3] = nam[(j * 2 + 1) * 2 * 16 + i * 2 + 1];
+            namOut[(j * 16 + i) + 240 * 0] = nam[(j * 2 + 0) * 2 * 16 + i * 2 + 0];
+            namOut[(j * 16 + i) + 240 * 1] = nam[(j * 2 + 0) * 2 * 16 + i * 2 + 1];
+            namOut[(j * 16 + i) + 240 * 2] = nam[(j * 2 + 1) * 2 * 16 + i * 2 + 0];
+            namOut[(j * 16 + i) + 240 * 3] = nam[(j * 2 + 1) * 2 * 16 + i * 2 + 1];
         }
     }
     fopen_s(&pFic, "../assets/tiles.bin", "wb");

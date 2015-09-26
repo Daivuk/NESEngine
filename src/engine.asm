@@ -27,36 +27,46 @@
 ;-----------------------------------------------------------------------------------------
 	.bank 0
 	.org $8000 
+    
+    .rsset $0000
+tmp1    .rs 2 ; $00-$01
+tmp2    .rs 2 ; $02-$03
+tmp3    .rs 2 ; $04-$05
+tmp4    .rs 2 ; $06-$07
+tmp5    .rs 2 ; $08-$09
+tmp6    .rs 2 ; $0A-$0B
+tmp7    .rs 2 ; $0C-$0D
+tmp8    .rs 2 ; $0E-$0F
 
 ;-----------------------------------------------------------------------------------------
 ; Turn ON, Reset. Start of the program
 ;-----------------------------------------------------------------------------------------
 	.bank 0
 RESET:
-	SEI          ; disable IRQs
-	CLD          ; disable decimal mode
-	LDX #$40
-	STX $4017    ; disable APU frame IRQ
-	LDX #$FF
-	TXS          ; Set up stack
-	INX          ; now X = 0
-	STX $2000    ; disable NMI
-	STX $2001    ; disable rendering
-	STX $4010    ; disable DMC IRQs
+	sei          ; disable IRQs
+	cld          ; disable decimal mode
+	ldx #$40
+	stx $4017    ; disable APU frame IRQ
+	ldx #$FF
+	txs          ; Set up stack
+	inx          ; now X = 0
+	stx $2000    ; disable NMI
+	stx $2001    ; disable rendering
+	stx $4010    ; disable DMC IRQs
 	jsr WaitVBlank
 clrmem:
-	LDA #$00
-	STA $0000, x
-	STA $0100, x
-	STA $0200, x
-	STA $0400, x
-	STA $0500, x
-	STA $0600, x
-	STA $0700, x
-	LDA #$FE
-	STA $0300, x
-	INX
-	BNE clrmem
+	lda #$00
+	sta $0000, x
+	sta $0100, x
+	sta $0200, x
+	sta $0400, x
+	sta $0500, x
+	sta $0600, x
+	sta $0700, x
+	lda #$FE
+	sta $0300, x
+	inx
+	bne clrmem
 	jsr WaitVBlank
 
 	ldx #$10			; Wait couple frames

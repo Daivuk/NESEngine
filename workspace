@@ -1,0 +1,11 @@
+<NotepadPlus>
+    <Project name="NESEngine">
+        <File name="src\data.asm" />
+        <File name="src\engine.asm" />
+        <File name="src\game.asm" />
+        <File name="src\macro.asm" />
+        <File name="src\ppu.asm" />
+        <File name="src\tiles.asm" />
+        <File name="src\timing.asm" />
+    </Project>
+</NotepadPlus>

@@ -58,6 +58,9 @@
     <None Include="src\macro.asm">
       <Filter>Engine</Filter>
     </None>
+    <None Include="src\tiles.asm">
+      <Filter>Engine</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Game">

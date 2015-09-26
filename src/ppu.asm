@@ -81,7 +81,7 @@ ppu_SetBGPattern:
 
 ;-----------------------------------------------------------------------------------------
 ; Set scrolling position
-; @$00 = 16 bits scroll value
+; @tmp1 = 16 bits scroll value
 ;-----------------------------------------------------------------------------------------
 ppu_SetScrolling:
     pha
@@ -90,14 +90,14 @@ ppu_SetScrolling:
     bne ppu_SetScrolling_doV
     lda #0
     sta cmd_scrollY
-    lda $00
+    lda tmp1
     sta cmd_scrollX
-    lda $01
+    lda tmp1 + 1
     and #%00000001
-    sta $00
+    sta tmp1
     lda cmd_bgFlags
     and #%11111100
-    ora $00
+    ora tmp1
     sta cmd_bgFlags
     jmp ppu_SetScrolling_done
 ppu_SetScrolling_doV:
@@ -110,10 +110,10 @@ ppu_SetScrolling_doV:
 ;  39-42 cycles, 32 bytes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-    lda    $01                   ;3  @3
+    lda    tmp1 + 1              ;3  @3
     and    #$F0                  ;2  @5
     sta    cmd_scrollY           ;3  @8
-    eor    $01                   ;3  @11
+    eor    tmp1 + 1              ;3  @11
     asl    A                     ;2  @13
     asl    A                     ;2  @15
     asl    A                     ;2  @17
@@ -122,7 +122,7 @@ ppu_SetScrolling_doV:
     bcc    .doneHigh             ;2³ @24/25
     adc    #(1 << 4) - 1         ;2  @26      -1 because carry is set
 .doneHigh:
-    adc    $00                   ;3  @29
+    adc    tmp1                  ;3  @29
     bcc    .try240               ;2³ @31/32
     adc    #16-1                 ;2  @33      -1 because carry is set
 .try240:
@@ -141,7 +141,7 @@ ppu_SetScrolling_doV:
 
 ;-----------------------------------------------------------------------------------------
 ; Update palette 0
-; @$00 = Pointer to the palette
+; @tmp1 = Pointer to the palette
 ;-----------------------------------------------------------------------------------------
 ppu_SetPal0:
     pha ; push
@@ -150,7 +150,7 @@ ppu_SetPal0:
 
     ldy #0
 SetPal0_loop:
-    lda [$00], y
+    lda [tmp1], y
     sta cmd_pal0, y
     iny
     cpy #16
@@ -167,7 +167,7 @@ SetPal0_loop:
 
 ;-----------------------------------------------------------------------------------------
 ; Update palette 1
-; @$00 = Pointer to the palette
+; @tmp1 = Pointer to the palette
 ;-----------------------------------------------------------------------------------------
 ppu_SetPal1:
     pha ; push
@@ -176,7 +176,7 @@ ppu_SetPal1:
 
     ldy #0
 SetPal1_loop:
-    lda [$00], y
+    lda [tmp1], y
     sta cmd_pal1, y
     iny
     cpy #16
