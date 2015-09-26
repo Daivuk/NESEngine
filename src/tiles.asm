@@ -104,7 +104,7 @@ getColumnAddr:
     ror A
     ror A
     ror A
-    adc game_zone_pData + 1     ; Start by saving the pointer to ROM data
+    adc game_zone_pData + 1 ; Start by saving the pointer to ROM data
     sta tmp1 + 1
     pla
     
@@ -113,6 +113,7 @@ getColumnAddr:
     asl A
     asl A
     asl A
+    clc
     adc game_zone_pData
     sta tmp1
     lda tmp1 + 1
@@ -133,7 +134,7 @@ getColumnAddr:
     pla
     
     pha
-    and #$01
+    and #%00000001
     bne getColumnAddr_bottomAttributes
     
     pla
@@ -232,7 +233,27 @@ vLoop:
     iny
     lda [tmp1], y
     sta $2007
+    
+    tay
+    lda #$01
+    bit tmp7
+    bne drawColumn_skipBottomRow
+    
+    tya
+    ror A
+    ror A
+    ror A
+    ror A
+    pha
     lda #8
+    ADD_TO_ADDR tmp3
+    lda tmp3 + 1
+    sta $2006
+    lda tmp3
+    sta $2006
+    pla
+    sta $2007
 
+drawColumn_skipBottomRow:
     POP_ALL
     rts
