@@ -1,14 +1,16 @@
     .rsset $0010
-game_state:             .rs 1 ; x10 Game state
-game_UNUSED:            .rs 1 ; x11 
-game_scroll:            .rs 2 ; x12 X or Y scroll position within a zone
-game_zone:              .rs 1 ; x14 Zone ID currently in
-game_zone_screen:       .rs 1 ; x15 Screen to span in the zone. Used only for loading
-game_zone_dir:          .rs 1 ; x16 Zone direction
-game_zone_size:         .rs 1 ; x17 Zone size, starting at x,y going in direction
-game_zone_pos:          .rs 2 ; x18 Zone position in world map
-game_zone_pData:        .rs 2 ; x1A Pointer to zone data
-game_zone_pTiles:       .rs 2 ; x1C Pointer to zone tiles data
+game_state:             .rs 1   ; x10 Game state
+game_UNUSED:            .rs 1   ; x11 
+game_scroll:            .rs 2   ; x12 X or Y scroll position within a zone
+game_zone:              .rs 1   ; x14 Zone ID currently in
+game_zone_screen:       .rs 1   ; x15 Screen to span in the zone. Used only for loading
+game_zone_dir:          .rs 1   ; x16 Zone direction
+game_zone_size:         .rs 1   ; x17 Zone size, starting at x,y going in direction
+game_zone_pos:          .rs 2   ; x18 Zone position in world map
+game_zone_pData:        .rs 2   ; x1A Pointer to zone data
+game_zone_pTiles:       .rs 2   ; x1C Pointer to zone tiles data
+game_zone_palette:      .rs 16  ; x1E Currently used palette
+game_pPalettes:         .rs 2   ; x2D All palettes pointer. 32 x 4 colours
 
 GAME_STATE_LOADING_SECTION .func 0
 GAME_STATE_PLAY .func 0
@@ -24,7 +26,7 @@ OnInit:
 
     jsr ppu_Off             ; Begin loading
 
-    lda #2                  ; We start at section 0
+    lda #1                  ; We start at section 0
     sta game_zone
     lda #0                  ; In screen 0
     sta game_zone_screen
@@ -32,7 +34,7 @@ OnInit:
 
     jsr ppu_On              ; Done loading
 
-    LOAD_ADDR palWorld1, tmp1            ; Default palette
+    LOAD_ADDR game_zone_palette, tmp1            ; Default palette
     jsr ppu_SetPal0
     LOAD_ADDR palWorld1_sprites, tmp1
     jsr ppu_SetPal1
@@ -41,11 +43,6 @@ OnInit:
     jsr ppu_SetScrollDir
     lda #BG_PATTERN1()              ; Our background tiles are on the second pattern
     jsr ppu_SetBGPattern
-
-    ; Scrolling 0,0
-    ;ldx #0
-    ;ldy #0
-    ;jsr ppu_SetScrolling
 
     pla
     rts

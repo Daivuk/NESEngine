@@ -49,6 +49,7 @@ struct sZone
     int id = 0;
     eTheme theme = THEME_PIPES;
     vector<sEntity> entities;
+    int pals[4];
 };
 
 int w;
@@ -266,23 +267,59 @@ int main()
 #define WRITEB(__value__) {uint8_t val = (uint8_t)__value__; fwrite(&val, 1, 1, pFic);}
 #define WRITEW(__value__) {uint16_t val = (uint16_t)__value__; fwrite(&val, 1, 2, pFic);}
 
-    // Data is loaded, now convert it
     FILE *pFic = nullptr;
+    fopen_s(&pFic, "../palettes.bin", "rb");
+    uint8_t palettes[128];
+    fread(palettes, 1, 128, pFic);
+    fclose(pFic);
+
+    // Data is loaded, now convert it
     fopen_s(&pFic, "../assets/world.bin", "wb");
+    for (auto &c : palettes)
+    {
+        WRITEB(c);
+    }
     WRITEB(startZoneId);
     WRITEW(playerStart.x);
     WRITEW(playerStart.y);
-    int offset = 5 + (int)zones.size() * 2;
+    int offset = (int)zones.size() * 2;
     for (auto &zone : zones)
     {
         WRITEW(offset);
         if (zone.dir == eDir::HORIZONTAL)
         {
-            offset += (zone.size * ((13 + 3) * 16)) + 4;
+            offset += (zone.size * ((13 + 3) * 16)) + 8;
         }
         else
         {
-            offset += (zone.size * (13 * (16 + 4))) + 4;
+            offset += (zone.size * (13 * (16 + 4))) + 8;
+        }
+    }
+    for (auto &zone : zones)
+    {
+        int palIndex = 0;
+        for (int i = zone.x * 16; i < zone.x * 16 + zone.size * 16; ++i)
+        {
+            for (int j = zone.y * 13; j < zone.y * 13 + 13; ++j)
+            {
+                auto &tile = pTiles[j * w + i];
+                bool found = false;
+                for (int k = 0; k < palIndex; ++k)
+                {
+                    if (zone.pals[k] == tile.pal)
+                    {
+                        tile.pal = k;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    assert(palIndex < 4); // We can't have more than 4 palettes per zone
+                    zone.pals[palIndex] = tile.pal;
+                    tile.pal = palIndex++;
+                }
+            }
         }
     }
     for (auto &zone : zones)
@@ -291,6 +328,10 @@ int main()
         WRITEB(zone.size);
         WRITEB(zone.x);
         WRITEB(zone.y);
+        WRITEB(zone.pals[0]);
+        WRITEB(zone.pals[1]);
+        WRITEB(zone.pals[2]);
+        WRITEB(zone.pals[3]);
 
         if (zone.dir == eDir::VERTICAL)
         {

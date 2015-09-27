@@ -19,7 +19,7 @@ tiles_loadSection:
     tax
     
     clc                                     ; Add 24
-    adc #23
+    adc #24
     cmp game_zone_size                      ; Clamp to zone size - 1
     bmi tiles_loadSection_skipClampSize
     lda game_zone_size
@@ -53,6 +53,31 @@ tiles_loadSection_loopColumns:
     
     POP_ALL
     rts
+    
+;-----------------------------------------------------------------------------------------
+; Copies a 4 color palette
+;-----------------------------------------------------------------------------------------
+copyPalette:
+    lda [tmp1], y
+    asl A
+    asl A
+    tay
+    lda worldPalettes, y
+    sta game_zone_palette, x
+    iny
+    inx
+    lda worldPalettes, y
+    sta game_zone_palette, x
+    iny
+    inx
+    lda worldPalettes, y
+    sta game_zone_palette, x
+    iny
+    inx
+    lda worldPalettes, y
+    sta game_zone_palette, x
+    inx
+    rts
 
 ;-----------------------------------------------------------------------------------------
 ; Update zone addr
@@ -62,15 +87,13 @@ tiles_updateTileData:
     
     lda game_zone
     asl A                       ; Each zone offset is 2 bytes
-    clc
-    adc #5
     tay
-    LOAD_ADDR worldData, 0      ; Setup the offset to the zone's first column
+    LOAD_ADDR worldData, tmp1   ; Setup the offset to the zone's first column
     lda [tmp1], y               ; Store the offset at $02
     sta tmp2
     iny
     lda [tmp1], y
-    sta $03
+    sta tmp2 + 1
     ADDW tmp1, tmp1, tmp2       ; Add base addr with offset
     
     lda (tmp1)                  ; Load zone properties
@@ -83,7 +106,17 @@ tiles_updateTileData:
     asl A
     sta game_zone_size
     
-    lda #4                      ; Skip header
+    ldy #4                      ; Copy zone palette
+    ldx #0
+    jsr copyPalette
+    ldy #5 
+    jsr copyPalette
+    ldy #6
+    jsr copyPalette
+    ldy #7
+    jsr copyPalette
+    
+    lda #8                      ; Skip header
     ADD_TO_ADDR tmp1
     
     lda tmp1                    ; Store our data pointer
