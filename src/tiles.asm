@@ -8,35 +8,50 @@ tiles_loadSection:
     
     PUSH_ALL
 
+    ; We will draw (zone * 16 - 8) to (zone * 16 + 23)
+    ; In other words, a screen (16 columns) with extra
+    ; 8 columns on each sides
     lda game_zone_screen    ; Column * 16
     asl A
     asl A
     asl A
     asl A
     tax
-    clc
-    adc #16
+    
+    clc                                     ; Add 24
+    adc #23
+    cmp game_zone_size                      ; Clamp to zone size - 1
+    bmi tiles_loadSection_skipClampSize
+    lda game_zone_size
+tiles_loadSection_skipClampSize:
     sta tmp7
     
+    txa                                     ; Subtract 8            
+    clc
+    adc #-8
+    cmp #248                                ; Clamp to 0
+    bcc tiles_loadSection_skipClampToZero
+    lda #0
+tiles_loadSection_skipClampToZero:
+    tax
+    
+    ; Loop the columns
 tiles_loadSection_loopColumns:
     txa
-    jsr getColumnAddr
     jsr drawColumn
     inx
     txa
     cmp tmp7
     bne tiles_loadSection_loopColumns
     
+    ; Set initial scroll position
+    lda game_zone_screen
+    sta tmp1 + 1
+    lda #0
+    sta tmp1
+    jsr ppu_SetScrolling
+    
     POP_ALL
-    rts
-
-AddToAddr:
-    clc
-    adc $00
-    sta $00
-    lda $01
-    adc #0
-    sta $01
     rts
 
 ;-----------------------------------------------------------------------------------------
@@ -46,25 +61,37 @@ tiles_updateTileData:
     PUSH_ALL
     
     lda game_zone
-    asl A                   ; Each zone offset is 2 bytes
+    asl A                       ; Each zone offset is 2 bytes
     clc
     adc #5
     tay
-    LOAD_ADDR worldData, 0  ; Setup the offset to the zone's first column
-    lda [$00], y            ; Store the offset at $02
-    sta $02
+    LOAD_ADDR worldData, 0      ; Setup the offset to the zone's first column
+    lda [tmp1], y               ; Store the offset at $02
+    sta tmp2
     iny
-    lda [$00], y
+    lda [tmp1], y
     sta $03
-    ADDW $00, $00, $02      ; Add base addr with offset, then +4 to skip the header
-    lda #4
-    jsr AddToAddr
-    lda $00
+    ADDW tmp1, tmp1, tmp2       ; Add base addr with offset
+    
+    lda (tmp1)                  ; Load zone properties
+    sta game_zone_dir
+    ldy #1
+    lda [tmp1], y
+    asl A
+    asl A
+    asl A
+    asl A
+    sta game_zone_size
+    
+    lda #4                      ; Skip header
+    ADD_TO_ADDR tmp1
+    
+    lda tmp1                    ; Store our data pointer
     sta game_zone_pData
-    lda $01
+    lda tmp1 + 1
     sta game_zone_pData + 1
         
-    LOAD_ADDR tiles, game_zone_pTiles      ; Tileset addr for this zone
+    LOAD_ADDR tiles, game_zone_pTiles   ; Tileset addr for this zone
     
     lda game_zone_pTiles
     sta tmp4
@@ -94,10 +121,13 @@ tiles_updateTileData:
 ; Get the address of a column
 ; @a = column ID
 ; tmp1 will have tile data address
-; tmp2 will have vram address
+; tmp2 will have vram tile address
+; tmp3 will have vram attributes address
 ;-----------------------------------------------------------------------------------------
 getColumnAddr:
-    pha
+    ; Tile data is at:
+    ; Column * 16
+    pha                     
     clc                     ; a /= 16
     and #$F0
     ror A
@@ -119,20 +149,33 @@ getColumnAddr:
     lda tmp1 + 1
     adc #0
     sta tmp1 + 1
+    lda #$20
+    sta tmp8
+    lda #$23
+    sta tmp8 + 1
+    lda #%00010000
+    sta tmp2
     pla
     
-    and #$0F
+    bit tmp2
+    beq getColumnAddr_skipOffPage
+    pha
+    lda #$24
+    sta tmp8
+    lda #$27
+    sta tmp8 + 1
+    pla
     
+getColumnAddr_skipOffPage:
+    and #$0F
     pha                     ; Nametable
     asl A                   ; Every 2 tiles offset
-    clc                     ; We skip first 4 rows, that's for the status bar
-    adc #128
+    ora #%10000000          ; +128 because We ignore the 4 first rows for status bar
     sta tmp2
-    lda #0
-    adc #$20
+    lda tmp8
     sta tmp2 + 1
     pla
-    
+  
     pha
     and #%00000001
     bne getColumnAddr_bottomAttributes
@@ -143,7 +186,7 @@ getColumnAddr:
     clc
     adc #$C8
     sta tmp3
-    lda #$23
+    lda tmp8 + 1
     sta tmp3 + 1
     rts
     
@@ -154,7 +197,7 @@ getColumnAddr_bottomAttributes:
     clc
     adc #$E0
     sta tmp3
-    lda #$23
+    lda tmp8 + 1
     sta tmp3 + 1
     rts
 
@@ -163,6 +206,8 @@ getColumnAddr_bottomAttributes:
 ; $00 = column address
 ;-----------------------------------------------------------------------------------------
 drawColumn:
+    jsr getColumnAddr
+
     PUSH_ALL
    
     bit $2002               ; read PPU status to reset the high/low latch
@@ -239,7 +284,7 @@ vLoop:
     bit tmp7
     bne drawColumn_skipBottomRow
     
-    tya
+    tya                 ; Bottom row is repeated previous row
     ror A
     ror A
     ror A

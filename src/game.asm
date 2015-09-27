@@ -1,7 +1,7 @@
     .rsset $0010
 game_state:             .rs 1 ; x10 Game state
 game_UNUSED:            .rs 1 ; x11 
-game_scroll:            .rs 2 ; x12 X,Y scroll position within a zone
+game_scroll:            .rs 2 ; x12 X or Y scroll position within a zone
 game_zone:              .rs 1 ; x14 Zone ID currently in
 game_zone_screen:       .rs 1 ; x15 Screen to span in the zone. Used only for loading
 game_zone_dir:          .rs 1 ; x16 Zone direction
@@ -24,7 +24,7 @@ OnInit:
 
     jsr ppu_Off             ; Begin loading
 
-    lda #0                  ; We start at section 0
+    lda #2                  ; We start at section 0
     sta game_zone
     lda #0                  ; In screen 0
     sta game_zone_screen

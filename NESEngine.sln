@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NESEngine", "NESEngine.vcxp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WorldConverter", "WorldConverter\WorldConverter.vcxproj", "{C3657A76-3FA6-4439-89EC-69E4DE1B45BD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PaletteMaker", "PaletteMaker\PaletteMaker.vcxproj", "{2D2527B0-9D78-489B-A2A9-4765E927C686}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -21,6 +23,10 @@ Global
 		{C3657A76-3FA6-4439-89EC-69E4DE1B45BD}.Debug|Win32.Build.0 = Debug|Win32
 		{C3657A76-3FA6-4439-89EC-69E4DE1B45BD}.Release|Win32.ActiveCfg = Release|Win32
 		{C3657A76-3FA6-4439-89EC-69E4DE1B45BD}.Release|Win32.Build.0 = Release|Win32
+		{2D2527B0-9D78-489B-A2A9-4765E927C686}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2D2527B0-9D78-489B-A2A9-4765E927C686}.Debug|Win32.Build.0 = Debug|Win32
+		{2D2527B0-9D78-489B-A2A9-4765E927C686}.Release|Win32.ActiveCfg = Release|Win32
+		{2D2527B0-9D78-489B-A2A9-4765E927C686}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

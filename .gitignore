@@ -41,4 +41,5 @@ Release
 *.nes
 *.fns
 *.deb
+*.ipch
 

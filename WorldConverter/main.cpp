@@ -107,9 +107,9 @@ int main()
             int i = 0;
             for (auto pXMLTile = pXMLData->FirstChildElement("tile"); pXMLTile; pXMLTile = pXMLTile->NextSiblingElement("tile"))
             {
-                auto gid = pXMLTile->IntAttribute("gid");
-                pTiles[i].id = (gid - 1) % 240;
-                pTiles[i].pal = (gid - 1) / 240;
+                auto gid = pXMLTile->IntAttribute("gid") - 1;
+                pTiles[i].pal = (gid / (240 * 2)) * 2 + ((gid / 16) % 2);
+                pTiles[i].id = (gid % 16) + (gid / 32) % 15 * 16;
                 ++i;
             }
         }
@@ -278,11 +278,11 @@ int main()
         WRITEW(offset);
         if (zone.dir == eDir::HORIZONTAL)
         {
-            offset += (zone.size * ((13 + 4) * 16));
+            offset += (zone.size * ((13 + 3) * 16)) + 4;
         }
         else
         {
-            offset += (zone.size * (13 * (16 + 4)));
+            offset += (zone.size * (13 * (16 + 4))) + 4;
         }
     }
     for (auto &zone : zones)
