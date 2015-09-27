@@ -7,6 +7,10 @@ tiles_loadSection:
     jsr tiles_updateTileData
     
     PUSH_ALL
+    
+    lda #$FF
+    bit game_zone_dir
+    bne tiles_loadSection_doVertical
 
     ; We will draw (zone * 16 - 8) to (zone * 16 + 23)
     ; In other words, a screen (16 columns) with extra
@@ -51,6 +55,67 @@ tiles_loadSection_loopColumns:
     sta tmp1
     jsr ppu_SetScrolling
     
+    lda #SCROLL_DIR_HORIZONTAL()    ; Scrolling direction
+    jsr ppu_SetScrollDir
+    POP_ALL
+    rts
+    
+tiles_loadSection_doVertical:
+    ; We will draw (zone * 13 - 6) to (zone * 13 + 6)
+    ; In other words, a screen (13 row) with extra
+    ; 6 rows up and down
+    lda game_zone_screen    ; Row * 13
+    tay
+    asl A       ; * 12
+    asl A
+    asl A
+    sta tmp1
+    tya
+    asl A       ; * 4
+    asl A
+    clc
+    adc tmp1
+    sta tmp1
+    tya
+    clc
+    adc tmp1
+    tax
+    
+    clc                                     ; Add 19
+    adc #19
+    cmp game_zone_size                      ; Clamp to zone size - 1
+    bmi tiles_loadSection_VskipClampSize
+    lda game_zone_size
+tiles_loadSection_VskipClampSize:
+    sta tmp7
+    
+    txa                                     ; Subtract 6           
+    clc
+    adc #-6
+    cmp #248                                ; Clamp to 0
+    bcc tiles_loadSection_VskipClampToZero
+    lda #0
+tiles_loadSection_VskipClampToZero:
+    tax
+    
+    ; Loop the Rows
+tiles_loadSection_loopRows:
+    txa
+    jsr drawRow
+    inx
+    txa
+    cmp tmp7
+    bne tiles_loadSection_loopRows
+    
+    ; Set initial scroll position
+    lda game_zone_screen
+    sta tmp1 + 1
+    lda #0
+    sta tmp1
+    jsr ppu_SetScrolling
+
+    lda #SCROLL_DIR_VERTICAL()      ; Scrolling direction
+    jsr ppu_SetScrollDir
     POP_ALL
     rts
     
@@ -96,16 +161,41 @@ tiles_updateTileData:
     sta tmp2 + 1
     ADDW tmp1, tmp1, tmp2       ; Add base addr with offset
     
-    lda (tmp1)                  ; Load zone properties
+    ldy #0
+    lda [tmp1], y               ; Load zone properties
     sta game_zone_dir
+    lda #$FF
+    bit game_zone_dir
+    bne tiles_updateTileData_doVertical
     ldy #1
     lda [tmp1], y
-    asl A
+    asl A   ; * 16
     asl A
     asl A
     asl A
     sta game_zone_size
+    jmp tiles_updateTileData_doneSize
     
+tiles_updateTileData_doVertical: ; * 13
+    ldy #1
+    lda [tmp2], y
+    tay
+    asl A       ; * 12
+    asl A
+    asl A
+    sta tmp2
+    tya
+    asl A       ; * 4
+    asl A
+    clc
+    adc tmp2
+    sta tmp2
+    tya
+    clc
+    adc tmp2
+    sta game_zone_size
+
+tiles_updateTileData_doneSize:
     ldy #4                      ; Copy zone palette
     ldx #0
     jsr copyPalette
@@ -232,6 +322,134 @@ getColumnAddr_bottomAttributes:
     sta tmp3
     lda tmp8 + 1
     sta tmp3 + 1
+    rts
+     
+;-----------------------------------------------------------------------------------------
+; Get the address of a row
+; @a = row ID
+; tmp1 will have tile data address
+; tmp2 will have vram tile address
+; tmp3 will have vram attributes address
+;-----------------------------------------------------------------------------------------
+getRowAddr:
+    PUSH_Y
+    
+    pha         ; Redo this code, it's wrong
+    lda #$20
+    tay
+    asl A
+    asl A
+    asl A
+    pha
+    tya
+    adc #0
+    tay
+    pla
+    asl A
+    pha
+    tya
+    adc #0
+    tay
+    pla
+    asl A
+    pha
+    tya
+    adc #0
+    sta tmp2 + 1
+    pla
+    sta tmp2
+    pla
+    
+    pha
+    lda game_zone_pData
+    sta tmp1
+    lda game_zone_pData + 1
+    sta tmp1 + 1
+    pla
+    
+    POP_Y
+    rts
+   
+;-----------------------------------------------------------------------------------------
+; Draw a row
+; $00 = row address
+;-----------------------------------------------------------------------------------------
+drawRow:
+    jsr getRowAddr
+    
+    PUSH_ALL
+    
+    bit $2002               ; read PPU status to reset the high/low latch
+    lda tmp2 + 1
+    sta $2006
+    lda tmp2
+    sta $2006
+    
+    ldy #0
+    lda [tmp1], y
+    sta $2007
+    
+    iny
+    lda [tmp1], y
+    sta $2007
+    
+    iny
+    lda [tmp1], y
+    sta $2007
+    
+    iny
+    lda [tmp1], y
+    sta $2007
+    
+    iny
+    lda [tmp1], y
+    sta $2007
+    
+    iny
+    lda [tmp1], y
+    sta $2007
+    
+    iny
+    lda [tmp1], y
+    sta $2007
+    
+    iny
+    lda [tmp1], y
+    sta $2007
+    
+    iny
+    lda [tmp1], y
+    sta $2007
+    
+    iny
+    lda [tmp1], y
+    sta $2007
+    
+    iny
+    lda [tmp1], y
+    sta $2007
+    
+    iny
+    lda [tmp1], y
+    sta $2007
+    
+    iny
+    lda [tmp1], y
+    sta $2007
+    
+    iny
+    lda [tmp1], y
+    sta $2007
+    
+    iny
+    lda [tmp1], y
+    sta $2007
+    
+    iny
+    lda [tmp1], y
+    sta $2007
+   
+    POP_ALL
     rts
 
 ;-----------------------------------------------------------------------------------------

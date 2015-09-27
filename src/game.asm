@@ -26,7 +26,7 @@ OnInit:
 
     jsr ppu_Off             ; Begin loading
 
-    lda #1                  ; We start at section 0
+    lda #5                  ; We start at section 0
     sta game_zone
     lda #0                  ; In screen 0
     sta game_zone_screen
@@ -39,8 +39,6 @@ OnInit:
     LOAD_ADDR palWorld1_sprites, tmp1
     jsr ppu_SetPal1
 
-    lda #SCROLL_DIR_HORIZONTAL()    ; Scrolling direction
-    jsr ppu_SetScrollDir
     lda #BG_PATTERN1()              ; Our background tiles are on the second pattern
     jsr ppu_SetBGPattern
 

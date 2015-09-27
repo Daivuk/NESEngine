@@ -341,27 +341,54 @@ int main()
                 {
                     WRITEB(pTiles[j * w + i].id);
                 }
-                int i = zone.x * 16;
-                uint8_t pal = pTiles[j * w + i + 0].pal << 6;
-                pal |= pTiles[j * w + i + 1].pal << 4;
-                pal |= pTiles[j * w + i + 2].pal << 2;
-                pal |= pTiles[j * w + i + 3].pal;
-                WRITEB(pal);
-                pal = pTiles[j * w + i + 4].pal << 6;
-                pal |= pTiles[j * w + i + 5].pal << 4;
-                pal |= pTiles[j * w + i + 6].pal << 2;
-                pal |= pTiles[j * w + i + 7].pal;
-                WRITEB(pal);
-                pal = pTiles[j * w + i + 8].pal << 6;
-                pal |= pTiles[j * w + i + 9].pal << 4;
-                pal |= pTiles[j * w + i + 10].pal << 2;
-                pal |= pTiles[j * w + i + 11].pal;
-                WRITEB(pal);
-                pal = pTiles[j * w + i + 12].pal << 6;
-                pal |= pTiles[j * w + i + 13].pal << 4;
-                pal |= pTiles[j * w + i + 14].pal << 2;
-                pal |= pTiles[j * w + i + 15].pal;
-                WRITEB(pal);
+                if ((j % 2) == 0)
+                {
+                    int i = zone.x * 16;
+                    uint8_t pal = pTiles[(j + 0) * w + (i + 0)].pal << 0;
+                    pal |= pTiles[(j + 0) * w + (i + 1)].pal << 2;
+                    pal |= pTiles[(j + 1) * w + (i + 0)].pal << 4;
+                    pal |= pTiles[(j + 1) * w + (i + 1)].pal << 6;
+                    WRITEB(pal);
+                    pal = pTiles[(j + 0) * w + (i + 2)].pal << 0;
+                    pal |= pTiles[(j + 0) * w + (i + 3)].pal << 2;
+                    pal |= pTiles[(j + 1) * w + (i + 2)].pal << 4;
+                    pal |= pTiles[(j + 1) * w + (i + 3)].pal << 6;
+                    WRITEB(pal);
+                    pal = pTiles[(j + 0) * w + (i + 4)].pal << 0;
+                    pal |= pTiles[(j + 0) * w + (i + 5)].pal << 2;
+                    pal |= pTiles[(j + 1) * w + (i + 4)].pal << 4;
+                    pal |= pTiles[(j + 1) * w + (i + 5)].pal << 6;
+                    WRITEB(pal);
+                    pal = pTiles[(j + 0) * w + (i + 4)].pal << 0;
+                    pal |= pTiles[(j + 0) * w + (i + 5)].pal << 2;
+                    pal |= pTiles[(j + 1) * w + (i + 4)].pal << 4;
+                    pal |= pTiles[(j + 1) * w + (i + 5)].pal << 6;
+                    WRITEB(pal);
+                }
+                else
+                {
+                    int i = zone.x * 16 + 8;
+                    uint8_t pal = pTiles[(j - 1) * w + (i + 0)].pal << 0;
+                    pal |= pTiles[(j - 1) * w + (i + 1)].pal << 2;
+                    pal |= pTiles[(j)* w + (i + 0)].pal << 4;
+                    pal |= pTiles[(j)* w + (i + 1)].pal << 6;
+                    WRITEB(pal);
+                    pal = pTiles[(j - 1) * w + (i + 2)].pal << 0;
+                    pal |= pTiles[(j - 1) * w + (i + 3)].pal << 2;
+                    pal |= pTiles[(j)* w + (i + 2)].pal << 4;
+                    pal |= pTiles[(j)* w + (i + 3)].pal << 6;
+                    WRITEB(pal);
+                    pal = pTiles[(j - 1) * w + (i + 4)].pal << 0;
+                    pal |= pTiles[(j - 1) * w + (i + 5)].pal << 2;
+                    pal |= pTiles[(j)* w + (i + 4)].pal << 4;
+                    pal |= pTiles[(j)* w + (i + 5)].pal << 6;
+                    WRITEB(pal);
+                    pal = pTiles[(j - 1) * w + (i + 4)].pal << 0;
+                    pal |= pTiles[(j - 1) * w + (i + 5)].pal << 2;
+                    pal |= pTiles[(j)* w + (i + 4)].pal << 4;
+                    pal |= pTiles[(j)* w + (i + 5)].pal << 6;
+                    WRITEB(pal);
+                }
             }
         }
         else if (zone.dir == eDir::HORIZONTAL)
