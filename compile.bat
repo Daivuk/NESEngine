@@ -1,2 +1,2 @@
-NESASM3 src/engine.asm
+NESASM3 -S src/engine.asm
 pause

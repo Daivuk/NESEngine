@@ -104,7 +104,7 @@ tiles_loadSection_loopRows:
     jsr drawRow
     inx
     txa
-    cmp tmp7
+    cmp #13;tmp7
     bne tiles_loadSection_loopRows
     
     ; Set initial scroll position
@@ -214,28 +214,28 @@ tiles_updateTileData_doneSize:
     lda tmp1 + 1
     sta game_zone_pData + 1
         
-    LOAD_ADDR tiles, game_zone_pTiles   ; Tileset addr for this zone
+    LOAD_ADDR tiles, game_zone_pTiles0   ; Tileset addr for this zone
     
-    lda game_zone_pTiles
-    sta tmp4
-    lda game_zone_pTiles + 1
-    sta tmp4 + 1
+    lda game_zone_pTiles0
+    sta game_zone_pTiles1
+    lda game_zone_pTiles0 + 1
+    sta game_zone_pTiles1 + 1
     lda #240
-    ADD_TO_ADDR tmp4
+    ADD_TO_ADDR game_zone_pTiles1
 
-    lda tmp4
-    sta tmp5
-    lda tmp4 + 1
-    sta tmp5 + 1
+    lda game_zone_pTiles1
+    sta game_zone_pTiles2
+    lda game_zone_pTiles1 + 1
+    sta game_zone_pTiles2 + 1
     lda #240
-    ADD_TO_ADDR tmp5
+    ADD_TO_ADDR game_zone_pTiles2
 
-    lda tmp5
-    sta tmp6
-    lda tmp5 + 1
-    sta tmp6 + 1
+    lda game_zone_pTiles2
+    sta game_zone_pTiles3
+    lda game_zone_pTiles2 + 1
+    sta game_zone_pTiles3 + 1
     lda #240
-    ADD_TO_ADDR tmp6
+    ADD_TO_ADDR game_zone_pTiles3
 
     POP_ALL
     rts
@@ -332,42 +332,43 @@ getColumnAddr_bottomAttributes:
 ; tmp3 will have vram attributes address
 ;-----------------------------------------------------------------------------------------
 getRowAddr:
-    PUSH_Y
+    PUSH_ALL
     
-    pha         ; Redo this code, it's wrong
-    lda #$20
     tay
-    asl A
-    asl A
-    asl A
-    pha
-    tya
-    adc #0
-    tay
-    pla
-    asl A
-    pha
-    tya
-    adc #0
-    tay
-    pla
-    asl A
-    pha
-    tya
-    adc #0
-    sta tmp2 + 1
-    pla
-    sta tmp2
-    pla
-    
-    pha
     lda game_zone_pData
     sta tmp1
     lda game_zone_pData + 1
     sta tmp1 + 1
-    pla
+    tya
     
-    POP_Y
+    ; vram row = (a % 30) * 2 * 32
+getRowAddr_mod30_loop:          ; a %= 30
+    cmp #30
+    bcc getRowAddr_mod30_done
+    clc
+    sbc #30
+    jmp getRowAddr_mod30_loop
+getRowAddr_mod30_done:
+    tay
+    asl A                       ; a *= 64; tmp2 = (8a + 8a + 8a + 8a) + (8a + 8a + 8a + 8a)
+    asl A
+    asl A
+    sta tmp3
+    ldx #0
+    stx tmp3 + 1
+    tax
+    ADD_TO_ADDR tmp3
+    txa
+    ADD_TO_ADDR tmp3
+    txa
+    ADD_TO_ADDR tmp3
+    ADDW tmp2, tmp3, tmp3       ; tmp2 = 2 * tmp3
+    lda tmp2 + 1
+    ora #$20
+    sta tmp2 + 1
+    tya
+   
+    POP_ALL
     rts
    
 ;-----------------------------------------------------------------------------------------
@@ -476,9 +477,9 @@ vLoop:
     tay
     lda [tmp1], y
     tay
-    lda [game_zone_pTiles], y
+    lda [game_zone_pTiles0], y
     sta $2007
-    lda [tmp4], y
+    lda [game_zone_pTiles1], y
     sta $2007
     
     lda tmp2 + 1            ; Write GPU address then increment 32 for next row
@@ -488,9 +489,9 @@ vLoop:
     lda #32
     ADD_TO_ADDR tmp2
 
-    lda [tmp5], y           ; Write the 2 next tiles
+    lda [game_zone_pTiles2], y           ; Write the 2 next tiles
     sta $2007
-    lda [tmp6], y
+    lda [game_zone_pTiles3], y
     sta $2007
 
     inx

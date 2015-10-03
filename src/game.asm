@@ -8,9 +8,12 @@ game_zone_dir:          .rs 1   ; x16 Zone direction
 game_zone_size:         .rs 1   ; x17 Zone size, starting at x,y going in direction
 game_zone_pos:          .rs 2   ; x18 Zone position in world map
 game_zone_pData:        .rs 2   ; x1A Pointer to zone data
-game_zone_pTiles:       .rs 2   ; x1C Pointer to zone tiles data
-game_zone_palette:      .rs 16  ; x1E Currently used palette
-game_pPalettes:         .rs 2   ; x2D All palettes pointer. 32 x 4 colours
+game_zone_pTiles0:      .rs 2   ; x1C Pointer to zone tiles data
+game_zone_pTiles1:      .rs 2   ; x1E Pointer to zone tiles data
+game_zone_pTiles2:      .rs 2   ; x20 Pointer to zone tiles data
+game_zone_pTiles3:      .rs 2   ; x22 Pointer to zone tiles data
+game_zone_palette:      .rs 16  ; x24 Currently used palette
+game_pPalettes:         .rs 2   ; x34 All palettes pointer. 32 x 4 colours
 
 GAME_STATE_LOADING_SECTION .func 0
 GAME_STATE_PLAY .func 0
